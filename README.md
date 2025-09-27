@@ -5,7 +5,7 @@
 
 - homelab01.local ✅
 - homelab02.local ❌
-- homelab03.local ❌ 
+- homelab03.local ❌
 
 ---
 
