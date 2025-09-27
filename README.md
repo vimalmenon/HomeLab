@@ -16,3 +16,10 @@ ssh -i ./id_rsa homelab@homelab01.local
 ssh -i ./id_rsa homelab@homelab02.local
 ssh -i ./id_rsa homelab@homelab03.local
 ```
+
+---
+
+## To Do
+
+- [ ] Setup K8s
+- [ ] Setup Ingress
