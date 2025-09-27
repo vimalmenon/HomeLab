@@ -1,2 +1,4 @@
-# HomeLab Set Up
+# HomeLab
+
+---
 
