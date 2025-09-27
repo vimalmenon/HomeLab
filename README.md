@@ -1,6 +1,5 @@
 # HomeLab
 
----
 
 ## Hostnames
 
