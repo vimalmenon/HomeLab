@@ -3,9 +3,9 @@
 
 ## Hostnames
 
-- homelab01.local
-- homelab02.local
-- homelab03.local
+- homelab01.local ✅
+- homelab02.local ❌
+- homelab03.local ❌ 
 
 ---
 
