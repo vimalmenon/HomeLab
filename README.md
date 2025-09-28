@@ -3,9 +3,9 @@
 
 ## Hostnames
 
-- homelab01.local ✅
-- homelab02.local ❌
-- homelab03.local ❌
+- homelab01.local
+- homelab02.local
+- homelab03.local
 
 ---
 
@@ -23,3 +23,5 @@ ssh -i ./id_rsa homelab@homelab03.local
 
 - [ ] Setup K8s
 - [ ] Setup Ingress
+- [ ] Setup Certificate
+
