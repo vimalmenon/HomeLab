@@ -15,6 +15,7 @@
 ssh -i ./id_rsa homelab@homelab01.local
 ssh -i ./id_rsa homelab@homelab02.local
 ssh -i ./id_rsa homelab@homelab03.local
+ssh -i ./id_rsa homelab@homelab04.local
 ```
 
 ---
