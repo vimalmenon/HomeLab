@@ -15,13 +15,13 @@ spec:
     path: homepage
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: homepage
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=false
+      - CreateNamespace=true
     retry:
       limit: 5
       backoff:
