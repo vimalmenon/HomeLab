@@ -1,0 +1,19 @@
+---
+# Service for Homepage dashboard
+apiVersion: v1
+kind: Service
+metadata:
+  name: homepage
+  namespace: default
+  labels:
+    app: homepage
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+    protocol: TCP
+  selector:
+    app: homepage
+
