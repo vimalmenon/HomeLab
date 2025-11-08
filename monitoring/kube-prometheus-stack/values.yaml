@@ -1,0 +1,208 @@
+fullnameOverride: kube-prometheus-stack
+namespaceOverride: monitoring
+
+kubeTargetVersionOverride: ""
+
+cleanPrometheusOperatorObjectNames: true
+
+prometheusOperator:
+  createCustomResource: true
+  admissionWebhooks:
+    enabled: true
+    failurePolicy: Fail
+    patch:
+      enabled: true
+  tls:
+    enabled: false
+
+defaultRules:
+  create: true
+  runbookUrl: https://runbooks.prometheus-operator.dev/
+
+nodeExporter:
+  enabled: true
+  hostRootfs: true
+
+kubeEtcd:
+  enabled: true
+
+kubeScheduler:
+  enabled: true
+
+kubeControllerManager:
+  enabled: true
+
+kubeProxy:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true
+
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    replicas: 1
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: nfs-client
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 5Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: ca-issuer
+      traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+      traefik.ingress.kubernetes.io/router.tls: "true"
+    hosts:
+      - alertmanager.homelab.lan
+    tls:
+      - hosts:
+          - alertmanager.homelab.lan
+        secretName: alertmanager-tls
+
+prometheus:
+  enabled: true
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: ca-issuer
+      traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+      traefik.ingress.kubernetes.io/router.tls: "true"
+    hosts:
+      - prometheus.homelab.lan
+    tls:
+      - hosts:
+          - prometheus.homelab.lan
+        secretName: prometheus-tls
+  prometheusSpec:
+    replicas: 1
+    retention: 15d
+    retentionSize: "15GiB"
+    scrapeInterval: 30s
+    evaluationInterval: 30s
+    enableAdminAPI: true
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: nfs-client
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 20Gi
+    resources:
+      requests:
+        cpu: 250m
+        memory: 1Gi
+      limits:
+        cpu: 1
+        memory: 2Gi
+    podMonitorNamespaceSelector: {}
+    serviceMonitorNamespaceSelector: {}
+    ruleNamespaceSelector: {}
+
+thanosRuler:
+  enabled: false
+
+grafana:
+  enabled: true
+  adminUser: admin
+  adminPassword: changeme
+  defaultDashboardsTimezone: browser
+  persistence:
+    enabled: true
+    storageClassName: nfs-client
+    size: 5Gi
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: ca-issuer
+      traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+      traefik.ingress.kubernetes.io/router.tls: "true"
+    hosts:
+      - grafana.homelab.lan
+    tls:
+      - hosts:
+          - grafana.homelab.lan
+        secretName: grafana-tls
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+dashboardProviders:
+  "dashboardproviders.yaml":
+    apiVersion: 1
+    providers:
+      - name: default
+        orgId: 1
+        folder: ""
+        type: file
+        disableDeletion: false
+        options:
+          path: /var/lib/grafana/dashboards/default
+
+sidecar:
+  dashboards:
+    enabled: true
+    searchNamespace: monitoring
+  datasources:
+    enabled: true
+
+prometheus-node-exporter:
+  tolerations:
+    - operator: Exists
+
+kubelet:
+  serviceMonitor:
+    https: true
+    insecureSkipVerify: true
+
+additionalPrometheusRulesMap:
+  homelab-alerts:
+    groups:
+      - name: node-health
+        rules:
+          - alert: NodeDiskRunningFull
+            expr: (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"}) < 0.15
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: Node disk running almost full
+              description: "Node {{$labels.instance}} disk {{$labels.mountpoint}} is more than 85% used"
+          - alert: NodeHighCpuLoad
+            expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+            for: 10m
+            labels:
+              severity: warning
+            annotations:
+              summary: Node CPU usage is high
+              description: "Node {{$labels.instance}} CPU usage above 85% for 10 minutes"
+          - alert: NodeOutOfMemory
+            expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) < 0.1
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: Node is low on memory
+              description: "Node {{$labels.instance}} memory available less than 10% for 5 minutes"
