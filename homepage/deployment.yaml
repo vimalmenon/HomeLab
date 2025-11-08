@@ -16,6 +16,25 @@ spec:
       labels:
         app: homepage
     spec:
+      initContainers:
+      - name: init-config
+        image: busybox:latest
+        command: ['sh', '-c']
+        args:
+          - |
+            # Always sync config files from ConfigMap to ensure they match repository
+            echo "Syncing services.yaml from ConfigMap to PVC"
+            cp /configmap-services/services.yaml /config/services.yaml
+            echo "Syncing bookmarks.yaml from ConfigMap to PVC"
+            cp /configmap-bookmarks/bookmarks.yaml /config/bookmarks.yaml
+            echo "Configuration synced successfully"
+        volumeMounts:
+        - name: homepage-config
+          mountPath: /config
+        - name: configmap-services-source
+          mountPath: /configmap-services
+        - name: configmap-bookmarks-source
+          mountPath: /configmap-bookmarks
       containers:
       - name: homepage
         image: ghcr.io/benphelps/homepage:latest
@@ -41,4 +60,10 @@ spec:
       - name: homepage-config
         persistentVolumeClaim:
           claimName: homepage-config-pvc
+      - name: configmap-services-source
+        configMap:
+          name: homepage-services-config
+      - name: configmap-bookmarks-source
+        configMap:
+          name: homepage-bookmarks-config
 
