@@ -1,0 +1,10 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/services
+
+- GitOps:
+    - ArgoCD:
+        href: https://argo.homelab.lan
+        description: GitOps continuous delivery tool
+        icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+
