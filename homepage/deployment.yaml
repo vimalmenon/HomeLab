@@ -27,6 +27,8 @@ spec:
             cp /configmap-services/services.yaml /config/services.yaml
             echo "Syncing bookmarks.yaml from ConfigMap to PVC"
             cp /configmap-bookmarks/bookmarks.yaml /config/bookmarks.yaml
+            echo "Syncing widgets.yaml from ConfigMap to PVC"
+            cp /configmap-widgets/widgets.yaml /config/widgets.yaml
             echo "Configuration synced successfully"
         volumeMounts:
         - name: homepage-config
@@ -35,6 +37,8 @@ spec:
           mountPath: /configmap-services
         - name: configmap-bookmarks-source
           mountPath: /configmap-bookmarks
+        - name: configmap-widgets-source
+          mountPath: /configmap-widgets
       containers:
       - name: homepage
         image: ghcr.io/benphelps/homepage:latest
@@ -66,4 +70,7 @@ spec:
       - name: configmap-bookmarks-source
         configMap:
           name: homepage-bookmarks-config
+      - name: configmap-widgets-source
+        configMap:
+          name: homepage-widgets-config
 
