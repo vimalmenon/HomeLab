@@ -12,8 +12,6 @@ prometheusOperator:
     failurePolicy: Fail
     patch:
       enabled: true
-  tls:
-    enabled: false
 
 defaultRules:
   create: true
