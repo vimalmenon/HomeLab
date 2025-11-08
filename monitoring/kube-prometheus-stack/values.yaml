@@ -12,6 +12,11 @@ prometheusOperator:
     failurePolicy: Fail
     patch:
       enabled: true
+    certManager:
+      enabled: true
+      issuerRef:
+        name: ca-issuer
+        kind: ClusterIssuer
 
 defaultRules:
   create: true
