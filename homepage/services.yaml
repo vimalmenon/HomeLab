@@ -8,3 +8,9 @@
         description: GitOps continuous delivery tool
         icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
 
+- Monitoring:
+    - Grafana:
+        href: https://grafana.homelab.lan
+        description: Kubernetes monitoring dashboards
+        icon: grafana
+
